@@ -1,33 +1,35 @@
-from peewee import Model, AutoField, PrimaryKeyField, CharField, SqliteDatabase, DecimalField, ForeignKeyField, FloatField
+from peewee import *
 
-# db = SqliteDatabase('db2.db')
-# class Category(Model):
-#     id = PrimaryKeyField()
-#     name = CharField(60)
-#     class Meta:
-#         database = db
-#         db_table = 'categories'
-# class Product(Model):
-#     id = PrimaryKeyField()
-#     name = CharField(60)
-#     price = FloatField()
-#     category_id = ForeignKeyField(Category)
-#     class Meta:
-#         database = db
-#         db_table = 'products'
+db = SqliteDatabase('Book_shop.db')
 
-db = SqliteDatabase('db2.db')
-class Category(Model):
-    id = PrimaryKeyField()
-    name = CharField(60)
+class BaseModel(Model):
     class Meta:
         database = db
-        db_table = 'categories'
-class Product(Model):
-    id = PrimaryKeyField()
-    name = CharField(60)
-    price = FloatField()
-    category_id = ForeignKeyField(Category)
+
+class Author(BaseModel):
+    name = CharField(unique=True)
     class Meta:
         database = db
-        db_table = 'products'
+        db_table = "authors" 
+
+class Book(BaseModel):
+    title = CharField()
+    author = ForeignKeyField(Author, backref='books') 
+    price = DecimalField(decimal_places=2)
+    class Meta:
+        database = db
+        db_table = "books"
+
+class Genre(BaseModel):
+    name = CharField(unique=True)
+    class Meta:
+        database = db
+        db_table = "genres"
+
+class BookGenre(BaseModel):
+    book = ForeignKeyField(Book, backref='genres')
+    genre = ForeignKeyField(Genre, backref='books')
+    class Meta:
+        database = db
+        db_table = "book_genres"
+
